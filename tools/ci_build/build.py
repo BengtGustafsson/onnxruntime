@@ -762,6 +762,7 @@ def run_subprocess(
     args,
     cwd=None,
     capture_stdout=False,
+    capture_stderr=False,
     dll_path=None,
     shell=False,
     env=None,
@@ -797,7 +798,7 @@ def run_subprocess(
 
     my_env.update(env)
 
-    return run(*args, cwd=cwd, capture_stdout=capture_stdout, shell=shell, env=my_env)
+    return run(*args, cwd=cwd, capture_stdout=capture_stdout, capture_stderr=capture_stderr, shell=shell, env=my_env)
 
 
 def update_submodules(source_dir):
@@ -1426,7 +1427,7 @@ def generate_build_tree(
                 + os.environ["PATH"]
             )
         preinstalled_dir = Path(build_dir) / config
-        run_subprocess(
+        result = run_subprocess(
             [
                 *cmake_args,
                 "-Donnxruntime_ENABLE_MEMLEAK_CHECKER="
@@ -1447,7 +1448,12 @@ def generate_build_tree(
             ],
             cwd=config_build_dir,
             cuda_home=cuda_home,
+            capture_stderr = True,
+            captuer_stdout = True,
         )
+        print("------------------------- STDOUT:\n", result.stdout.decode('utf-8'))
+        print("------------------------- STDERR:\n", result.stderr.decode('utf-8'))
+        print("-------------------------")
 
 
 def clean_targets(cmake_path, build_dir, configs):
