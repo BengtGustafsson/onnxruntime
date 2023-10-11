@@ -1415,6 +1415,7 @@ def generate_build_tree(
 
     for config in configs:
         config_build_dir = get_config_build_dir(build_dir, config)
+        print("Making dir: ", config_build_dir)
         os.makedirs(config_build_dir, exist_ok=True)
         if args.use_tvm:
             os.environ["PATH"] = (
@@ -1427,6 +1428,7 @@ def generate_build_tree(
                 + os.environ["PATH"]
             )
         preinstalled_dir = Path(build_dir) / config
+        print("Calling cmake with ", len(cmake_args), " arguments.")
         result = run_subprocess(
             [
                 *cmake_args,
@@ -2301,6 +2303,7 @@ def generate_documentation(source_dir, build_dir, configs, validate):
 
 
 def main():
+    print("Starting ONNX Runtime in build.py")
     log.debug("Command line arguments:\n  {}".format(" ".join(shlex.quote(arg) for arg in sys.argv[1:])))
 
     args = parse_arguments()
