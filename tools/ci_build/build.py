@@ -1451,7 +1451,7 @@ def generate_build_tree(
             cwd=config_build_dir,
             cuda_home=cuda_home,
             capture_stderr = True,
-            captuer_stdout = True,
+            capture_stdout = True,
         )
         print("------------------------- STDOUT:\n", result.stdout.decode('utf-8'))
         print("------------------------- STDERR:\n", result.stderr.decode('utf-8'))
