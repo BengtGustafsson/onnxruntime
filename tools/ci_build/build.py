@@ -768,6 +768,7 @@ def run_subprocess(
     env=None,
     python_path=None,
     cuda_home=None,
+    check=True
 ):
     if env is None:
         env = {}
@@ -798,7 +799,7 @@ def run_subprocess(
 
     my_env.update(env)
 
-    return run(*args, cwd=cwd, capture_stdout=capture_stdout, capture_stderr=capture_stderr, shell=shell, env=my_env)
+    return run(*args, cwd=cwd, capture_stdout=capture_stdout, capture_stderr=capture_stderr, shell=shell, env=my_env, check=check)
 
 
 def update_submodules(source_dir):
