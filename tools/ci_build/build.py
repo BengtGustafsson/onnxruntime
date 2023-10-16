@@ -1452,6 +1452,7 @@ def generate_build_tree(
             cuda_home=cuda_home,
             capture_stderr = True,
             capture_stdout = True,
+            check = False
         )
         print("------------------------- STDOUT:\n", result.stdout.decode('utf-8'))
         print("------------------------- STDERR:\n", result.stderr.decode('utf-8'))
