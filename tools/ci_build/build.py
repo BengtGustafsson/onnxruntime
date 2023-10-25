@@ -799,7 +799,7 @@ def run_subprocess(
 
     my_env.update(env)
 
-    return run(*args, cwd=cwd, capture_stdout=capture_stdout, capture_stderr=capture_stderr, shell=shell, env=my_env, check=check)
+    return run(*args, cwd=cwd, capture_stdout=capture_stdout, capture_stderr=capture_stderr, shell=shell, env=my_env, check=check, timeout=7200)
 
 
 def update_submodules(source_dir):

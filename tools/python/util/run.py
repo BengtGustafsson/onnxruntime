@@ -19,6 +19,7 @@ def run(
     env=None,
     check=True,
     quiet=False,
+    timeout=None,
 ):
     """Runs a subprocess.
 
@@ -55,6 +56,7 @@ def run(
         stderr=output(capture_stderr),
         env=env,
         shell=shell,
+        timeout=timeout,
     )
 
     _log.debug(f"Subprocess completed. Return code: {completed_process.returncode}")
