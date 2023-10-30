@@ -47,18 +47,22 @@ def run(
     def output(is_stream_captured):
         return subprocess.PIPE if is_stream_captured else (subprocess.DEVNULL if quiet else None)
 
-    completed_process = subprocess.run(
-        cmd,
-        cwd=cwd,
-        check=check,
-        input=input,
-        stdout=output(capture_stdout),
-        stderr=output(capture_stderr),
-        env=env,
-        shell=shell,
-        timeout=timeout,
-    )
+    try:
+        completed_process = subprocess.run(
+            cmd,
+            cwd=cwd,
+            check=check,
+            input=input,
+            stdout=output(capture_stdout),
+            stderr=output(capture_stderr),
+            env=env,
+            shell=shell,
+            timeout=timeout,
+        )
 
-    _log.debug(f"Subprocess completed. Return code: {completed_process.returncode}")
+        _log.debug(f"Subprocess completed. Return code: {completed_process.returncode}")
+    except subprocess.TimeoutExpired as ex:
+        ex.returncode = -17      # Make the TimeoutExpired object similar enough to the CompletedProcess object normally returned.
+        return ex
 
     return completed_process
