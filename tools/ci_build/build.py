@@ -1455,8 +1455,7 @@ def generate_build_tree(
             capture_stdout = True,
             check = False
         )
-        print("------------------------- STDOUT:\n", result.stdout.decode('utf-8'))
-        print("------------------------- STDERR:\n", result.stderr.decode('utf-8'))
+        print("------------------------- STDOUT + STDERR:\n", result.stdout.decode('utf-8'))
         print("-------------------------")
 
 
