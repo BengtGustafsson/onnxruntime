@@ -799,7 +799,7 @@ def run_subprocess(
 
     my_env.update(env)
 
-    return run(*args, cwd=cwd, capture_stdout=capture_stdout, capture_stderr=capture_stderr, shell=shell, env=my_env, check=check, timeout=6*3600)
+    return run(*args, cwd=cwd, capture_stdout=capture_stdout, capture_stderr=capture_stderr, shell=shell, env=my_env, check=check, timeout=2*3600)
 
 
 def update_submodules(source_dir):
@@ -1455,7 +1455,8 @@ def generate_build_tree(
             capture_stdout = True,
             check = False
         )
-        print("------------------------- STDOUT + STDERR:\n", result.stdout.decode('utf-8'))
+        print("------------------------- STDOUT \n", result.stdout.decode('utf-8'))
+        print("------------------------- STDERR \n", result.stderr.decode('utf-8'))
         print("-------------------------")
 
 

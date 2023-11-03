@@ -48,7 +48,7 @@ def run(
         return subprocess.PIPE if is_stream_captured else (subprocess.DEVNULL if quiet else None)
 
     def output_stderr(is_stream_captured):
-        return subprocess.STDOUT if is_stream_captured else (subprocess.DEVNULL if quiet else None)
+        return subprocess.PIPE if is_stream_captured else (subprocess.DEVNULL if quiet else None)
 
     try:
         completed_process = subprocess.run(
