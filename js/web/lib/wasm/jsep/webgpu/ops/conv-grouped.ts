@@ -3,11 +3,11 @@
 
 import {TensorView} from '../../tensor-view';
 import {ShapeUtil} from '../../util';
-import {GpuDataType, ProgramInfo} from '../types';
+import {ProgramInfo} from '../types';
 
 import {inputVariable, outputVariable, ShaderHelper} from './common';
 import {calculateOutputShape, ConvAttributes} from './conv';
-import {getActicationSnippet} from './fuse-utils';
+import {getActivationSnippet} from './fuse-utils';
 
 /**
  * naive grouped conv implementation, supports 1d/2d conv
@@ -22,7 +22,7 @@ export const createGroupedConvProgramInfo =
       const wShape = inputs[1].dims;
       const outputChannelsPerGroup = wShape[0] / attributes.group;
 
-      const {activationFunction, applyActivation} = getActicationSnippet(attributes);
+      const {activationFunction, applyActivation} = getActivationSnippet(attributes);
 
       const isChannelLast = attributes.format === 'NHWC';
       const outputShape = calculateOutputShape(
@@ -85,14 +85,11 @@ export const createGroupedConvProgramInfo =
   }`;
       return {
         name: 'GroupedConv',
-        inputTypes: hasBias ? [GpuDataType.default, GpuDataType.default, GpuDataType.default] :
-                              [GpuDataType.default, GpuDataType.default],
         shaderCache: {hint: attributes.cacheKey},
         getRunData: () => ({
           outputs: [{
             dims: squeezeOutputShapeFunction ? squeezeOutputShapeFunction(outputShape) : outputShape,
-            dataType: inputs[0].dataType,
-            gpuDataType: GpuDataType.default
+            dataType: inputs[0].dataType
           }],
           dispatchGroup: {x: Math.ceil(outputSize / 64 /* workgroup size */)},
         }),

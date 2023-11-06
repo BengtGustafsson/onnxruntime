@@ -22,7 +22,7 @@
 import {LOG_DEBUG} from '../../../log';
 import {TensorView} from '../../../tensor-view';
 import {ShapeUtil} from '../../../util';
-import {GpuDataType, ProgramInfo} from '../../types';
+import {ProgramInfo} from '../../types';
 import {tensorTypeToWsglStorageType} from '../common';
 import {ConvAttributes} from '../conv';
 
@@ -213,11 +213,9 @@ export const createConv2DMatMulProgramInfo =
 
       return {
         name: 'Conv2DMatMul',
-        inputTypes: hasBias ? [GpuDataType.default, GpuDataType.default, GpuDataType.default] :
-                              [GpuDataType.default, GpuDataType.default],
         shaderCache: {hint: attributes.cacheKey},
         getRunData: () => ({
-          outputs: [{dims: outputShape, dataType: inputs[0].dataType, gpuDataType: GpuDataType.default}],
+          outputs: [{dims: outputShape, dataType: inputs[0].dataType}],
           dispatchGroup: {x: dispatch[0], y: dispatch[1], z: dispatch[2]},
         }),
         getShaderSource: () => `
@@ -244,8 +242,9 @@ export const createConv2DMatMulProgramInfo =
         ${declareFunctions}
         ${
             conv2dCommonSnippet(
-                isChannelsLast, fitAOuter, fitBOuter, fitInner, hasBias, undefined, false, elementsSize[0],
-                elementsSize[1], elementsSize[2], t)}
+                isChannelsLast, fitAOuter, fitBOuter, fitInner, hasBias,
+                attributes.activation.toLowerCase() as Activation, false, elementsSize[0], elementsSize[1],
+                elementsSize[2], t)}
             ${
             isVec4 ?
                 makeMatMulPackedVec4Source(elementsPerThread, workGroupSize, t, undefined, !isChannelsLast, tileInner) :

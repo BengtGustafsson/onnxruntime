@@ -21,9 +21,9 @@
 
 import {TensorView} from '../../../tensor-view';
 import {ShapeUtil} from '../../../util';
-import {GpuDataType, ProgramInfo} from '../../types';
+import {ProgramInfo} from '../../types';
 import {getBroadcastDims, IndicesHelper, inputVariable, outputVariable, ShaderHelper, tensorTypeToWsglStorageType} from '../common';
-import {getActicationSnippet, InternalActivationAttributes} from '../fuse-utils';
+import {getActivationSnippet, InternalActivationAttributes} from '../fuse-utils';
 
 import {typeSnippet} from './activation_util';
 
@@ -440,7 +440,7 @@ export const createMatmulProgramInfo =
       const dimInner = aShape[aShape.length - 1];
       const dimBOuter = bShape[bShape.length - 1];
       const isVec4 = dimInner % 4 === 0 && dimBOuter % 4 === 0;
-      const {activationFunction, applyActivation} = getActicationSnippet(activationAttributes);
+      const {activationFunction, applyActivation} = getActivationSnippet(activationAttributes, isVec4);
 
       // TODO: fine tune size
       const elementsPerThread = dimAOuter <= 8 ? [4, 1, 1] : [4, 4, 1];
@@ -473,19 +473,17 @@ export const createMatmulProgramInfo =
   const dimBOuter: i32 = ${dimBOuter};
   const dimInner: i32 = ${dimInner};
   ${shaderHelper.declareVariables(...inputVariables, output)}
-  ${declareFunctions}
   ${activationFunction}
+  ${declareFunctions}
   ${
           isVec4 ? makeMatMulPackedVec4Source(elementsPerThread, workgroupSize, dataType, batchDims) :
                    makeMatMulPackedSource(elementsPerThread, workgroupSize, dataType, batchDims)}
                    ${batchDims.impl()}`;
       return {
         name: 'MatMul',
-        inputTypes: hasBias ? [GpuDataType.default, GpuDataType.default, GpuDataType.default] :
-                              [GpuDataType.default, GpuDataType.default],
         shaderCache: {hint: activationAttributes.activationCacheKey},
         getRunData: () => ({
-          outputs: [{dims: outputShape, dataType: inputs[0].dataType, gpuDataType: GpuDataType.default}],
+          outputs: [{dims: outputShape, dataType: inputs[0].dataType}],
           dispatchGroup: {x: dispatch[0], y: dispatch[1], z: dispatch[2]}
         }),
         getShaderSource,

@@ -22,7 +22,7 @@
 import {LOG_DEBUG} from '../../../log';
 import {TensorView} from '../../../tensor-view';
 import {ShapeUtil} from '../../../util';
-import {GpuDataType, ProgramInfo} from '../../types';
+import {ProgramInfo} from '../../types';
 import {ConvTransposeAttributes} from '../conv-transpose';
 
 import {Activation, activationFnSnippet, biasActivationSnippet, typeSnippet} from './activation_util';
@@ -200,11 +200,9 @@ export const createConv2DTransposeMatMulProgramInfo =
       }
       return {
         name: 'Conv2DTransposeMatMul',
-        inputTypes: hasBias ? [GpuDataType.default, GpuDataType.default, GpuDataType.default] :
-                              [GpuDataType.default, GpuDataType.default],
         shaderCache: {hint: attributes.cacheKey},
         getRunData: () => ({
-          outputs: [{dims: outputShape, dataType: inputs[0].dataType, gpuDataType: GpuDataType.default}],
+          outputs: [{dims: outputShape, dataType: inputs[0].dataType}],
           dispatchGroup: {x: dispatch[0], y: dispatch[1], z: dispatch[2]}
         }),
         getShaderSource: () => `
@@ -238,7 +236,9 @@ export const createConv2DTransposeMatMulProgramInfo =
         const dimBOuter : i32 = ${dimBOuter};
         const dimInner : i32 = ${dimInner};
         ${declareFunctions}
-        ${conv2dTransposeCommonSnippet(isChannelsLast, hasBias, undefined, false, innerElementSize)}
+        ${
+            conv2dTransposeCommonSnippet(
+                isChannelsLast, hasBias, attributes.activation.toLowerCase() as Activation, false, innerElementSize)}
         ${
             isVec4 ? makeMatMulPackedVec4Source(
                          elementsPerThread, workGroupSize, 'f32', undefined, !isChannelsLast, tileInner) :
