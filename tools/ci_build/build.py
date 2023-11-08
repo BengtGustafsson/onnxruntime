@@ -903,6 +903,7 @@ def number_of_nvcc_threads(args):
                 fmha_cu_files = 4 if is_windows() else 16
                 fmha_parallel_jobs = min(fmha_cu_files, number_of_parallel_jobs(args))
                 nvcc_threads = max(1, int(available_memory / (memory_per_thread * fmha_parallel_jobs)))
+                nvcc_threads = 1
                 print(
                     f"nvcc_threads={nvcc_threads} to ensure memory per thread >= 4GB for available_memory={available_memory} and fmha_parallel_jobs={fmha_parallel_jobs}"
                 )
@@ -1447,13 +1448,13 @@ def generate_build_tree(
             ],
             cwd=config_build_dir,
             cuda_home=cuda_home,
-            capture_stderr = True,
-            capture_stdout = True,
+#            capture_stderr = True,
+#            capture_stdout = True,
             check = False
         )
-        print("------------------------- STDOUT \n", result.stdout.decode('utf-8'))
-        print("------------------------- STDERR \n", result.stderr.decode('utf-8'))
-        print("-------------------------")
+#        print("------------------------- STDOUT \n", result.stdout.decode('utf-8'))
+#        print("------------------------- STDERR \n", result.stderr.decode('utf-8'))
+#        print("-------------------------")
 
 
 def clean_targets(cmake_path, build_dir, configs):
